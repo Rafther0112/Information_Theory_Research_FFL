@@ -179,7 +179,7 @@ for Hill in valores_posibles_Hill:
         
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 2000 #número de células 
+        num_cel = 1000 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -193,4 +193,3 @@ for Hill in valores_posibles_Hill:
     diccionario_global_FFL_C1[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
     np.save('Simulacion_FFL_C1_AND_final.npy', diccionario_global_FFL_C1)
 #array_nuevo = np.load('Simulacion_FFL_C1_AND.npy', allow_pickle=True).item()
-
