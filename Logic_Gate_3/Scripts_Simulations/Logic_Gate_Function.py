@@ -1,6 +1,20 @@
 import numpy as np
+from tqdm import tqdm
+from numba import jit,njit
+import pandas as pd
+import json
 
-def f(A, R, K):
+@njit
+def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
+    return expresion_level*((cantidad**hill)/(cantidad**hill + sensitivity**hill))
+
+@njit
+def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
+    return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
+
+
+@njit
+def logic_gate_function_3(A, R, K):
     # Ensure K is a numpy array for element-wise operations
     K = np.array(K)
 
