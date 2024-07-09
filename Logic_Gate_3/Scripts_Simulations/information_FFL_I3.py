@@ -192,7 +192,7 @@ for Hill in valores_posibles_Hill:
         
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 10000 #número de células 
+        num_cel = 100 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -205,6 +205,20 @@ for Hill in valores_posibles_Hill:
 
 #    diccionario_global_FFL_I3[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
 #    np.save('Simulacion_FFL_I3_AND_final.npy', diccionario_global_FFL_I3)
+celulas = np.mean(celulas, axis=0)
+# %%
+import matplotlib.pyplot as plt
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
 
+axs[0].plot(celulas[:,4])
+axs[0].set_title('Protein X')
+axs[1].plot(celulas[:,5])
+axs[1].set_title('Protein Y')
+axs[2].plot(celulas[:,6])
+axs[2].set_title('Protein Z')
+fig.suptitle('Logic Gate 3 I3', fontsize=16)
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.savefig("Logic_Gate_3_Incooherent_3.jpg", dpi = 500)
 
 
