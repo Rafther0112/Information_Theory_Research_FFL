@@ -11,7 +11,7 @@ def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
 @njit
 def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
-
+@njit
 def logic_gate_function_7(A, B, K, a):
     term1 = (K[0] * A) / ((K[3] + A) * (K[4] + B))
     term2 = (K[1] * B) / ((K[3] + A) * (K[4] + B))

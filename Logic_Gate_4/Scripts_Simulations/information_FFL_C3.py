@@ -27,8 +27,11 @@ Mz = 25
 #___________________________________________________________________________________________________
 
 diccionario_global_FFL_C3 = {}
-valores_posibles_Hill = [1,2,3, 4]
-valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
+#valores_posibles_Hill = [1,2,3, 4]
+#valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
+
+valores_posibles_Hill = [2]
+valores_posibles_Kx = [4]
 
 for Hill in valores_posibles_Hill:
     distribucion_proteina_X = []
