@@ -59,7 +59,7 @@ for Hill in valores_posibles_Hill:
         @njit
         def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
 
-            ARNmZ_interaction_X = Hill_Activation(cantidad_X, Kxy, Ky, Hill)
+            ARNmZ_interaction_X = Hill_Represion(cantidad_X, Kxy, Ky, Hill)
             ARNmZ_interaction_Y = Hill_Activation(cantidad_Y, Kxy, Ky, Hill)
             K_parameters = [1,1,1,1,1]
             retorno = logic_gate_function_13(ARNmZ_interaction_X, ARNmZ_interaction_Y, K_parameters)
