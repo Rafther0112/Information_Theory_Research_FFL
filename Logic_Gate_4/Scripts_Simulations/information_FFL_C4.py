@@ -1,12 +1,11 @@
-
+#%%
 #Importe de librerias
-
 import numpy as np
 from tqdm import tqdm
-
 from numba import jit,njit
 import pandas as pd
-
+import json
+from Logic_Gate_Function import logic_gate_function_4, Hill_Activation, Hill_Represion
 #___________________________________________________________________________________________________
 
 #Parametros de simulacion
@@ -38,20 +37,17 @@ for Hill in valores_posibles_Hill:
 
     for Kx in tqdm(valores_posibles_Kx):
         
-
         Mx = Kx/gammamx
         valor_X_estacionario = (Kpx/muX)*Mx
 
         valor_Y_estacionario = (Kpy/muY)*My
         valor_Z_estacionario = (Kpz/muZ)*Mz
 
-
         Kxy  = valor_X_estacionario        #Coeficiente de interaccion proteina X con ARNmY
         Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
         Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
-        Kz = (Mz*gammamz)*( (((valor_Y_estacionario**Hill) + (Kyz**Hill))*((valor_X_estacionario**Hill) + (Kxz **Hill))     )   /  ((Kxz**Hill)*(valor_Y_estacionario**Hill))   )
 
         @njit
         def funcion_creacion_ARNmX():
@@ -63,8 +59,12 @@ for Hill in valores_posibles_Hill:
 
         @njit
         def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
-            creacion_ARNmZ = Kz*((Kxz**Hill)/(cantidad_X**Hill + Kxz**Hill))*((cantidad_Y**Hill)/(cantidad_Y**Hill + Kyz**Hill))
-            return creacion_ARNmZ
+
+            ARNmZ_interaction_X = Hill_Represion(cantidad_X, Kxy, Ky, Hill)
+            ARNmZ_interaction_Y = Hill_Activation(cantidad_Y, Kxy, Ky, Hill)
+            K_parameters = [1,1,1,1,1]
+            retorno = logic_gate_function_4(ARNmZ_interaction_X, ARNmZ_interaction_Y, K_parameters)
+            return retorno
 
         @njit
         def funcion_creacion_X(cantidad_mX):
@@ -190,7 +190,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 2000 #número de células 
+        num_cel = 10000 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -201,8 +201,8 @@ for Hill in valores_posibles_Hill:
         distribucion_proteina_Y.append(distribuciones_propias_Y)
         distribucion_proteina_Z.append(distribuciones_propias_Z)
 
-    diccionario_global_FFL_C4[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
-    np.save('Simulacion_FFL_C4_AND_final.npy', diccionario_global_FFL_C4)
+#    diccionario_global_FFL_C4[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
+#    np.save('Simulacion_FFL_C4_AND_final.npy', diccionario_global_FFL_C4)
 
 
 

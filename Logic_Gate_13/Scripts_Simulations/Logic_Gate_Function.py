@@ -12,7 +12,8 @@ def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
 def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
 
-def f(R, A, K, a):
+@njit
+def logic_gate_function_13(R, A, K):
     # Ensure K is a numpy array for element-wise operations
     K = np.array(K)
 
@@ -25,6 +26,6 @@ def f(R, A, K, a):
     denominator = term3 + term4
     fraction = numerator / denominator
 
-    result = a * (1 + fraction)
+    result = 1 + fraction
 
     return result
