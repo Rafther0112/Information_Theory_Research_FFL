@@ -203,5 +203,18 @@ for Hill in valores_posibles_Hill:
 
 #    diccionario_global_FFL_I2[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
 #    np.save('Simulacion_FFL_I2_AND_final.npy', diccionario_global_FFL_I2)
+celulas = np.mean(celulas, axis=0)
+# %%
+import matplotlib.pyplot as plt
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
 
+axs[0].plot(celulas[:,4])
+axs[0].set_title('Protein X')
+axs[1].plot(celulas[:,5])
+axs[1].set_title('Protein Y')
+axs[2].plot(celulas[:,6])
+axs[2].set_title('Protein Z')
+fig.suptitle('Logic Gate 14 I2', fontsize=16)
 
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.savefig("Logic_Gate_14_Icoherent_2.jpg", dpi = 500)
