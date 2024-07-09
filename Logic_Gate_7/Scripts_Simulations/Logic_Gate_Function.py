@@ -12,11 +12,11 @@ def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
 def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
 
-def f(A, B, r, a):
-    term1 = r[0] * (a * A) / ((1 + A) * (1 + B))
-    term2 = r[1] * (a * B) / ((1 + A) * (1 + B))
-    term3 = r[2] * (a * (A * B)) / ((1 + A) * (1 + B))
+def f(A, B, K, a):
+    term1 = (K[0] * A) / ((K[3] + A) * (K[4] + B))
+    term2 = (K[1] * B) / ((K[3] + A) * (K[4] + B))
+    term3 = (K[2] * A * B) / ((K[3] + A) * (K[4] + B))
 
-    result = term1 + term2 - term3
+    result = a*(term1 + term2 - term3)
 
     return result
