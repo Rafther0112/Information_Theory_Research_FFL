@@ -1,14 +1,12 @@
-
+#%%
 #Importe de librerias
-
 import numpy as np
 from tqdm import tqdm
-
 from numba import jit,njit
 import pandas as pd
-
+import json
+from Logic_Gate_Function import logic_gate_function_10, Hill_Activation, Hill_Represion
 #___________________________________________________________________________________________________
-
 #Parametros de simulacion
 
 Kpx = 200            #Tasa de creacion de proteina X
@@ -26,7 +24,6 @@ muZ     =1/30            #Tasa de degradacion de proteina Z
 My = 10
 Mz = 25
 #___________________________________________________________________________________________________
-
 diccionario_global_FFL_I1 = {}
 valores_posibles_Hill = [1,2,3, 4]
 valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
@@ -38,20 +35,17 @@ for Hill in valores_posibles_Hill:
 
     for Kx in tqdm(valores_posibles_Kx):
         
-
         Mx = Kx/gammamx
         valor_X_estacionario = (Kpx/muX)*Mx
 
         valor_Y_estacionario = (Kpy/muY)*My
         valor_Z_estacionario = (Kpz/muZ)*Mz
 
-
         Kxy  = valor_X_estacionario        #Coeficiente de interaccion proteina X con ARNmY
         Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
         Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(valor_X_estacionario**Hill))
-        Kz = (Mz*gammamz)*( (((valor_Y_estacionario**Hill) + (Kyz**Hill))*((valor_X_estacionario**Hill) + (Kxz **Hill))     )   /  ((Kyz**Hill)*(valor_X_estacionario**Hill))   )
 
         @njit
         def funcion_creacion_ARNmX():
@@ -63,8 +57,13 @@ for Hill in valores_posibles_Hill:
 
         @njit
         def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
-            creacion_ARNmZ = Kz*((cantidad_X**Hill)/(cantidad_X**Hill + Kxz**Hill))*((Kyz**Hill)/(cantidad_Y**Hill + Kyz**Hill))
-            return creacion_ARNmZ
+
+            ARNmZ_interaction_X = Hill_Activation(cantidad_X, Kxy, Ky, Hill)
+            ARNmZ_interaction_Y = Hill_Represion(cantidad_Y, Kxy, Ky, Hill)
+            K_parameters = [1,1,1,1,1]
+            retorno = logic_gate_function_10(ARNmZ_interaction_X, ARNmZ_interaction_Y, K_parameters, Ky)
+            #NECESITO REVISAR EL CUARTO PARAMETRO DE ESTA FUNCION PARA SABER COMO HACER QUE CUADRE BIEN LA ESCALA QUE QUEREMOS
+            return retorno
 
         @njit
         def funcion_creacion_X(cantidad_mX):
@@ -179,7 +178,6 @@ for Hill in valores_posibles_Hill:
         @njit('f8[:,:](f8[:],f8[:])')
         def Estado_celula(X0,tiempos):
 
-            
             X = np.zeros((len(tiempos),len(X0)))
             X[0] = X0
             
@@ -190,7 +188,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 2000 #número de células 
+        num_cel = 10000 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -201,8 +199,8 @@ for Hill in valores_posibles_Hill:
         distribucion_proteina_Y.append(distribuciones_propias_Y)
         distribucion_proteina_Z.append(distribuciones_propias_Z)
 
-    diccionario_global_FFL_I1[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
-    np.save('Simulacion_FFL_I1_AND_final.npy', diccionario_global_FFL_I1)
+#    diccionario_global_FFL_I1[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
+#    np.save('Simulacion_FFL_I1_AND_final.npy', diccionario_global_FFL_I1)
 
 
 

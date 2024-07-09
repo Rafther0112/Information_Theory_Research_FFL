@@ -7,7 +7,6 @@ import pandas as pd
 import json
 from Logic_Gate_Function import logic_gate_function_4, Hill_Activation, Hill_Represion
 #___________________________________________________________________________________________________
-
 #Parametros de simulacion
 
 Kpx = 200            #Tasa de creacion de proteina X
