@@ -5,8 +5,8 @@ from tqdm import tqdm
 from numba import jit,njit
 import pandas as pd
 import json
-from Logic_Gate_Function import logic_gate_function_14, Hill_Activation, Hill_Represion____________________________________________________________________________
-
+from Logic_Gate_Function import logic_gate_function_14, Hill_Activation, Hill_Represion
+#____________________________________________________________________________
 #Parametros de simulacion
 
 Kpx = 200            #Tasa de creacion de proteina X
@@ -191,7 +191,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 10000 #número de células 
+        num_cel = 100 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
