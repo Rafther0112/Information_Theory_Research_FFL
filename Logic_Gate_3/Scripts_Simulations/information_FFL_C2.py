@@ -45,9 +45,9 @@ for Hill in valores_posibles_Hill:
         valor_Y_estacionario = (Kpy/muY)*My
         valor_Z_estacionario = (Kpz/muZ)*Mz
 
-        Kxy  = valor_X_estacionario        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
-        Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
+        Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
+        Kxz  = valor_X_estacionario/2         #Coeficiente de interaccion proteina X con ARNmZ
+        Kyz  = valor_Y_estacionario/2         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
 
@@ -191,7 +191,7 @@ for Hill in valores_posibles_Hill:
             return X
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 100 #número de células 
+        num_cel = 10 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -219,4 +219,5 @@ axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 3 C2', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("Logic_Gate_3_Coherent_2.jpg", dpi = 500)
+#plt.savefig("Logic_Gate_3_Coherent_2.jpg", dpi = 500)
+# %%
