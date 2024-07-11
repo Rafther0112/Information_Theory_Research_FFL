@@ -1,4 +1,4 @@
-
+#%%
 #Importe de librerias
 
 import numpy as np
@@ -50,7 +50,7 @@ for Hill in valores_posibles_Hill:
 
 
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
+        Kxz  = valor_X_estacionario/2         #Coeficiente de interaccion proteina X con ARNmZ
         Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
@@ -220,7 +220,9 @@ axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 2 C4', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("Logic_Gate_2_Coherent_4.jpg", dpi = 500)
+#plt.savefig("Logic_Gate_2_Coherent_4.jpg", dpi = 500)
 
 
 
+
+# %%
