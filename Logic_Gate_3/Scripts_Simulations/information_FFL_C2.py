@@ -46,8 +46,8 @@ for Hill in valores_posibles_Hill:
         valor_Z_estacionario = (Kpz/muZ)*Mz
 
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario/4         #Coeficiente de interaccion proteina X con ARNmZ
-        Kyz  = valor_Y_estacionario/4         #Coeficiente de interaccion proteina Y con ARNmZ
+        Kxz  = valor_X_estacionario/2         #Coeficiente de interaccion proteina X con ARNmZ
+        Kyz  = valor_Y_estacionario/8         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
 
@@ -62,8 +62,8 @@ for Hill in valores_posibles_Hill:
         @njit
         def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
 
-            ARNmZ_interaction_X = Hill_Activation(cantidad_X, 10*Kxy, Ky, Hill)
-            ARNmZ_interaction_Y = Hill_Represion(cantidad_Y, Kxy, Ky, Hill)
+            ARNmZ_interaction_X = Hill_Activation(cantidad_X, Kxz, Ky, Hill)
+            ARNmZ_interaction_Y = Hill_Represion(cantidad_Y, Kyz, Ky, Hill)
             K_parameters = [1,1,1,1,1]
             retorno = logic_gate_function_3(ARNmZ_interaction_X, ARNmZ_interaction_Y, K_parameters)
             return retorno

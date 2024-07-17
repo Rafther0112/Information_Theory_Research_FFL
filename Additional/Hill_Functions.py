@@ -5,6 +5,7 @@ from numba import jit,njit
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+#%%
 
 def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((cantidad**hill)/(cantidad**hill + sensitivity**hill))
@@ -12,32 +13,12 @@ def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
 def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
 #%%
-valores_X = np.linspace(0,1000,1000)
-
-valores_Activacion = []
-valores_Represion = []
-
-for valor in valores_X:
-    valores_Activacion.append(Hill_Activation(valor, 500, 1000, 2))
-    valores_Represion.append(Hill_Represion(valor, 200, 1000, 2))
-
-plt.plot(valores_Activacion, color = 'green', label = "Activacion")
-plt.plot(valores_Represion, color = 'red', label = "represion")
-#%%
-#%%
-#Importe de librerias
-import numpy as np
-from tqdm import tqdm
-from numba import jit,njit
-import pandas as pd
-import json
-#%%
 #___________________________________________________________________________________________________
 # FUNCIONES 
 
 #___________________________________________________________________________________________________
 #Parametros de simulacion
-
+"""
 Kpx = 200            #Tasa de creacion de proteina X
 Kpy = 300            #Tasa de creacion de proteina Y
 Kpz = 100            #Tasa de creacion de proteina Z
@@ -50,8 +31,7 @@ muX     =1/20            #Tasa de degradacion de proteina X
 muY     =1/40            #Tasa de degradacion de proteina Y
 muZ     =1/30            #Tasa de degradacion de proteina Z
 
-My = 10
-Mz = 25
+My = 1
 
 Kx = 4
 Hill = 2
@@ -63,7 +43,7 @@ valor_Y_estacionario = (Kpy/muY)*My
 Kxy  = valor_X_estacionario/2       #Coeficiente de interaccion proteina X con ARNmY
 Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
 
-Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(valor_X_estacionario**Hill))
+Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
 
 print(f"Estado_Estacionario_X: {valor_X_estacionario}")
 print(f"Estado_Estacionario_Y: {valor_Y_estacionario}")
@@ -71,28 +51,66 @@ print(f"Estado_Estacionario_Y: {valor_Y_estacionario}")
 print(f"Kxy: {Kxy}")
 print(f"Ky: {Ky}")
 @njit
+"""
+Kpx = 200            #Tasa de creacion de proteina X
+Kpy = 300            #Tasa de creacion de proteina Y
+
+gammamx = 1/5        #Tasa de degradacion de ARNmX
+gammamy = 1/7        #Tasa de degradacion de ARNmY
+
+muX     =1/20            #Tasa de degradacion de proteina X
+muY     =1/40            #Tasa de degradacion de proteina Y
+
+
+
+Kx = 4
+Ky = 10
+Hill = 2
+
+Mx = Kx/gammamx
+valor_X_estacionario = (Kpx/muX)*Mx
+
+Kxy  = valor_X_estacionario/2       #Coeficiente de interaccion proteina X con ARNmY
+Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
+
+#My = (Ky/gammamy)*((Kxy**Hill)/(valor_X_estacionario**Hill + Kxy**Hill))
+#valor_Y_estacionario = (Kpy/muY)*My
+
+
+#Dinamica ARNmx
+@njit
 def funcion_creacion_ARNmX():
     return Kx
+
+@njit
+def funcion_degradacion_ARNmX(cantidad_mX):
+    return gammamx*cantidad_mX
+
+#Dinamica X
+@njit
+def funcion_creacion_X(cantidad_mX):
+    return Kpx*cantidad_mX
+
+@njit
+def funcion_degradacion_X(cantidad_X):
+    return muX * cantidad_X 
+
+
+#Dinamica ARNmy
 @njit
 def funcion_creacion_ARNmY(cantidad_X):
     return Ky*((Kxy**Hill)/(cantidad_X**Hill + Kxy**Hill))
 
 @njit
-def funcion_creacion_X(cantidad_mX):
-    return Kpx*cantidad_mX
+def funcion_degradacion_ARNmY(cantidad_mY):
+    return gammamy*cantidad_mY
+
+
+#Dinamica Y
 @njit
 def funcion_creacion_Y(cantidad_mY):
     return Kpy*cantidad_mY
 
-@njit
-def funcion_degradacion_ARNmX(cantidad_mX):
-    return gammamx*cantidad_mX
-@njit
-def funcion_degradacion_ARNmY(cantidad_mY):
-    return gammamy*cantidad_mY
-@njit
-def funcion_degradacion_X(cantidad_X):
-    return muX * cantidad_X 
 @njit
 def funcion_degradacion_Y(cantidad_Y):
     return muY * cantidad_Y 
@@ -174,10 +192,16 @@ x0 = np.array([0., 0., 0., 0., 0.])
 num_cel = 100 #número de células 
 celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 # %%
-celulas = np.mean(celulas, axis = 0)
+celulas_promedio = np.mean(celulas, axis = 0)
 # %%
 import matplotlib.pyplot as plt
-plt.plot(celulas[:,-2], color = "green", label = "X constitutivo")
-plt.plot(celulas[:,-1], color = "red", label = "Y Activacion")
+plt.plot(celulas_promedio[:,1], color = "green", label = "X constitutivo")
+plt.plot(celulas_promedio[:,2], color = "red", label = "Y Activacion")
 plt.legend()
+# %%
+plt.plot(celulas_promedio[:,2])
+# %%
+print(My)
+# %%
+celulas_promedio[:,2][-1]
 # %%
