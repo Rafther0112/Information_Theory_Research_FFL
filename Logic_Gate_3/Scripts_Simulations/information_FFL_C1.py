@@ -212,5 +212,5 @@ axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 3 C1', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-#plt.savefig("Logic_Gate_3_Coherent_1.jpg", dpi = 500)
+plt.savefig("Logic_Gate_3_Coherent_1.jpg", dpi = 500)
 # %%

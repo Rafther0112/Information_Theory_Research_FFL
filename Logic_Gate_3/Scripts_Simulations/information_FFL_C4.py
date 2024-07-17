@@ -193,7 +193,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 10 #número de células 
+        num_cel = 100 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]

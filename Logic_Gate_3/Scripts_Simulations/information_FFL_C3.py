@@ -192,7 +192,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 10 #número de células 
+        num_cel = 100 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -217,11 +217,10 @@ axs[1].set_title('Protein Y')
 axs[2].plot(celulas[:,6])
 axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 3 C3', fontsize=16)
-
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-#plt.savefig("Logic_Gate_3_Coherent_3.jpg", dpi = 500)
+plt.savefig("Logic_Gate_3_Coherent_3.jpg", dpi = 500)
 # %%
-def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
+"""def funcion_creacion_ARNmZ(cantidad_X, cantidad_Y):
 
             ARNmZ_interaction_X = Hill_Represion(cantidad_X, Kxy, Ky, Hill)
             ARNmZ_interaction_Y = Hill_Represion(cantidad_Y, Kxy, Ky, Hill)
@@ -233,3 +232,4 @@ print(Kpz*funcion_creacion_ARNmZ(80000, 120000))
 # %%
 print((Kpz/muZ)*Mz)
 # %%
+"""
