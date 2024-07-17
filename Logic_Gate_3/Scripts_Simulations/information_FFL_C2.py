@@ -220,5 +220,4 @@ fig.suptitle('Logic Gate 3 C2', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.savefig("Logic_Gate_3_Coherent_2.jpg", dpi = 500)
-
 # %%
