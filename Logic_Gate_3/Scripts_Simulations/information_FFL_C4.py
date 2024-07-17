@@ -47,8 +47,8 @@ for Hill in valores_posibles_Hill:
         valor_Z_estacionario = (Kpz/muZ)*Mz
 
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
-        Kyz  = valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
+        Kxz  = valor_X_estacionario/4         #Coeficiente de interaccion proteina X con ARNmZ
+        Kyz  = valor_Y_estacionario/4         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
         Kz = (Mz*gammamz)*( (((valor_Y_estacionario**Hill) + (Kyz**Hill))*((valor_X_estacionario**Hill) + (Kxz **Hill))     )   /  ((Kxz**Hill)*(valor_Y_estacionario**Hill))   )
