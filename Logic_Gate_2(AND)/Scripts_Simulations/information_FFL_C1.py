@@ -5,11 +5,6 @@ from tqdm import tqdm
 from numba import jit,njit
 import pandas as pd
 import json
-#___________________________________________________________________________________________________
-# FUNCIONES 
-
-#___________________________________________________________________________________________________
-#Parametros de simulacion
 
 Kpx = 200            #Tasa de creacion de proteina X
 Kpy = 300            #Tasa de creacion de proteina Y
@@ -22,15 +17,12 @@ gammamz = 1/10        #Tasa de degradacion de ARNmZ
 muX     =1/20            #Tasa de degradacion de proteina X
 muY     =1/40            #Tasa de degradacion de proteina Y
 muZ     =1/30            #Tasa de degradacion de proteina Z
-
-My = 10
-Mz = 25
 #___________________________________________________________________________________________________
 diccionario_global_FFL_C1 = {}
 #valores_posibles_Hill = [1,2,3, 4]
 #valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
 
-valores_posibles_Hill = [2]
+valores_posibles_Hill = [4]
 valores_posibles_Kx = [4]
 
 for Hill in valores_posibles_Hill:
@@ -43,16 +35,15 @@ for Hill in valores_posibles_Hill:
         Mx = Kx/gammamx
         valor_X_estacionario = (Kpx/muX)*Mx
 
-        valor_Y_estacionario = (Kpy/muY)*My
-        valor_Z_estacionario = (Kpz/muZ)*Mz
-
-
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
         Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
+
+        valor_Y_estacionario = (Kpy/muY)*((valor_X_estacionario**Hill)/(valor_X_estacionario**Hill + Kxy**Hill))
+
         Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
 
-        Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(valor_X_estacionario**Hill))
-        Kz = (Mz*gammamz)*( (((valor_Y_estacionario**Hill) + (Kyz**Hill))*((valor_X_estacionario**Hill) + (Kxz **Hill))     )   /  ((valor_X_estacionario**Hill)*(valor_Y_estacionario**Hill))   )
+        Ky = 3
+        Kz = 25
 
         @njit
         def funcion_creacion_ARNmX():
@@ -195,8 +186,24 @@ for Hill in valores_posibles_Hill:
 
 #    diccionario_global_FFL_C1[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
 #    np.save('Simulacion_FFL_C1_AND_final.npy', diccionario_global_FFL_C1)
-celulas = np.mean(celulas, axis=0)
+#%%
+Distribucion_X = celulas[:,:,-3]
+DIstribucion_Z = celulas[:,:,-1]
+#%%
+Informacion = np.zeros((len(Distribucion_X), len(Distribucion_X)))
+for tiempo_i in np.arange(0,len(Distribucion_X)):
+    for tiempo_j in np.arange(0, len(Distribucion_X)):
+        data_I1 = {'X': Distribucion_X[:,tiempo_i],
+                'Y': DIstribucion_Z[:,tiempo_j]}
+        Cov_matrix_I1 = np.array(pd.DataFrame.cov(pd.DataFrame(data_I1)))
+        Informacion[tiempo_i][tiempo_j] = (1/2)*np.log2((Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1])/(Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1] - (Cov_matrix_I1[0][1])**2))
+#%%
+print(np.nanmax(Informacion))
+
 # %%
+import matplotlib.pyplot as plt
+plt.imshow(Informacion)
+#%%
 import matplotlib.pyplot as plt
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
 
@@ -209,5 +216,6 @@ axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 2 C1', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("Logic_Gate_2_Coherent_1.jpg", dpi = 500)
+#plt.savefig("Logic_Gate_2_Coherent_1.jpg", dpi = 500)
     
+# %%
