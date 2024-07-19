@@ -1,4 +1,4 @@
-
+#%%
 """
 Simulacion computacional con algoritmo de Gillespie del FFL C4 con compuerta logica OR
 Se tomaron todos los valores de las constantes de Hill como las mismas. 
@@ -31,13 +31,14 @@ muX     =1/20            #Tasa de degradacion de proteina X
 muY     =1/40            #Tasa de degradacion de proteina Y
 muZ     =1/30            #Tasa de degradacion de proteina Z
 
-My = 10
-Mz = 25
 #___________________________________________________________________________________________________
 
 diccionario_global_FFL_C4 = {}
-valores_posibles_Hill = [1,2,3, 4]
-valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
+#valores_posibles_Hill = [1,2,3,4]
+#valores_posibles_Kx = [1,2,3,4,5,6,7,8,9,10]
+
+valores_posibles_Hill = [2]
+valores_posibles_Kx = [4]
 
 for Hill in valores_posibles_Hill:
     distribucion_proteina_X = []
@@ -46,20 +47,18 @@ for Hill in valores_posibles_Hill:
 
     for Kx in tqdm(valores_posibles_Kx):
         
-
         Mx = Kx/gammamx
         valor_X_estacionario = (Kpx/muX)*Mx
 
-        valor_Y_estacionario = (Kpy/muY)*My
-        valor_Z_estacionario = (Kpz/muZ)*Mz
+        Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
+        Kxz  = valor_X_estacionario/2   
 
+        Ky = 3
+        Kz = 10
 
-        Kxy  = valor_X_estacionario        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
-        Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
+        valor_Y_estacionario = Ky*(Kpy/(muY*gammamy))*((Kxy**Hill)/(valor_X_estacionario**Hill + Kxy**Hill))
 
-        Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
-        Kz = (Mz*gammamz)/(((Kxz**Hill)/((valor_X_estacionario**Hill) + (Kxz **Hill)))+((valor_Y_estacionario**Hill)/((valor_Y_estacionario**Hill) + (Kyz**Hill))))
+        Kyz  = valor_Y_estacionario/2 
 
         @njit
         def funcion_creacion_ARNmX():
@@ -198,7 +197,7 @@ for Hill in valores_posibles_Hill:
 
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 1000 #número de células 
+        num_cel = 100 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -209,8 +208,41 @@ for Hill in valores_posibles_Hill:
         distribucion_proteina_Y.append(distribuciones_propias_Y)
         distribucion_proteina_Z.append(distribuciones_propias_Z)
 
-    diccionario_global_FFL_C4[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
-    np.save('Simulacion_FFL_C4_OR_final.npy', diccionario_global_FFL_C4)
+#    diccionario_global_FFL_C4[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
+#    np.save('Simulacion_FFL_C4_OR_final.npy', diccionario_global_FFL_C4)
 
+#%%
+Distribucion_X = celulas[:,:,-3]
+DIstribucion_Z = celulas[:,:,-1]
+#%%
+Informacion = np.zeros((len(Distribucion_X[0,:]), len(Distribucion_X[0,:])))
+for tiempo_i in np.arange(0,len(Distribucion_X[0,:])):
+    for tiempo_j in np.arange(0, len(Distribucion_X[0,:])):
+        data_I1 = {'X': Distribucion_X[:,tiempo_i],
+                'Y': DIstribucion_Z[:,tiempo_j]}
+        Cov_matrix_I1 = np.array(pd.DataFrame.cov(pd.DataFrame(data_I1)))
+        Informacion[tiempo_i][tiempo_j] = (1/2)*np.log2((Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1])/(Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1] - (Cov_matrix_I1[0][1])**2))
+#%%
+print(np.nanmax(Informacion[20:,20:]))
+
+# %%
+import matplotlib.pyplot as plt
+plt.imshow(Informacion)
+#%%
+celulas_promedio = np.mean(celulas, axis=0)
+import matplotlib.pyplot as plt
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
+
+axs[0].plot(celulas_promedio[:,4])
+axs[0].set_title('Protein X')
+axs[1].plot(celulas_promedio[:,5])
+axs[1].set_title('Protein Y')
+axs[2].plot(celulas_promedio[:,6])
+axs[2].set_title('Protein Z')
+fig.suptitle('Logic Gate 12 C4', fontsize=16)
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+#plt.savefig("Logic_Gate_12_Coherent_4.jpg", dpi = 500)
+#%%
 
 
