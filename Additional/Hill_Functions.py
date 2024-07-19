@@ -13,45 +13,6 @@ def Hill_Activation(cantidad, sensitivity, expresion_level, hill):
 def Hill_Represion(cantidad, sensitivity, expresion_level, hill):
     return expresion_level*((sensitivity**hill)/(cantidad**hill + sensitivity**hill))
 #%%
-#___________________________________________________________________________________________________
-# FUNCIONES 
-
-#___________________________________________________________________________________________________
-#Parametros de simulacion
-"""
-Kpx = 200            #Tasa de creacion de proteina X
-Kpy = 300            #Tasa de creacion de proteina Y
-Kpz = 100            #Tasa de creacion de proteina Z
-
-gammamx = 1/5        #Tasa de degradacion de ARNmX
-gammamy = 1/7        #Tasa de degradacion de ARNmY
-gammamz = 1/10        #Tasa de degradacion de ARNmZ
-
-muX     =1/20            #Tasa de degradacion de proteina X
-muY     =1/40            #Tasa de degradacion de proteina Y
-muZ     =1/30            #Tasa de degradacion de proteina Z
-
-My = 1
-
-Kx = 4
-Hill = 2
-
-Mx = Kx/gammamx
-valor_X_estacionario = (Kpx/muX)*Mx
-valor_Y_estacionario = (Kpy/muY)*My
-
-Kxy  = valor_X_estacionario/2       #Coeficiente de interaccion proteina X con ARNmY
-Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
-
-Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(Kxy**Hill))
-
-print(f"Estado_Estacionario_X: {valor_X_estacionario}")
-print(f"Estado_Estacionario_Y: {valor_Y_estacionario}")
-
-print(f"Kxy: {Kxy}")
-print(f"Ky: {Ky}")
-@njit
-"""
 Kpx = 200            #Tasa de creacion de proteina X
 Kpy = 300            #Tasa de creacion de proteina Y
 

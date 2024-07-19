@@ -23,7 +23,7 @@ diccionario_global_FFL_C1 = {}
 #valores_posibles_Kx = [1, 2,3,4,5,6,7,8, 9, 10]
 
 valores_posibles_Hill = [4]
-valores_posibles_Kx = [4]
+valores_posibles_Kx = [10]
 
 for Hill in valores_posibles_Hill:
     distribucion_proteina_X = []
@@ -36,11 +36,11 @@ for Hill in valores_posibles_Hill:
         valor_X_estacionario = (Kpx/muX)*Mx
 
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario         #Coeficiente de interaccion proteina X con ARNmZ
+        Kxz  = valor_X_estacionario/2         #Coeficiente de interaccion proteina X con ARNmZ
 
         valor_Y_estacionario = (Kpy/muY)*((valor_X_estacionario**Hill)/(valor_X_estacionario**Hill + Kxy**Hill))
 
-        Kyz  = 2*valor_Y_estacionario         #Coeficiente de interaccion proteina Y con ARNmZ
+        Kyz  = valor_Y_estacionario/2         #Coeficiente de interaccion proteina Y con ARNmZ
 
         Ky = 3
         Kz = 25
@@ -173,7 +173,7 @@ for Hill in valores_posibles_Hill:
         
         x0 = np.array([0., 0., 0., 0., 0., 0., 0.])
 
-        num_cel = 100 #número de células 
+        num_cel = 1000 #número de células 
         celulas = np.array([Estado_celula(x0,np.arange(0.,700.,2.)) for i in tqdm(range(num_cel))])
 
         distribuciones_propias_X = celulas[:,0:,4]
@@ -204,18 +204,19 @@ print(np.nanmax(Informacion))
 import matplotlib.pyplot as plt
 plt.imshow(Informacion)
 #%%
+celulas_promedio = np.mean(celulas, axis=0)
 import matplotlib.pyplot as plt
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
 
-axs[0].plot(celulas[:,4])
+axs[0].plot(celulas_promedio[:,4])
 axs[0].set_title('Protein X')
-axs[1].plot(celulas[:,5])
+axs[1].plot(celulas_promedio[:,5])
 axs[1].set_title('Protein Y')
-axs[2].plot(celulas[:,6])
+axs[2].plot(celulas_promedio[:,6])
 axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 2 C1', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-#plt.savefig("Logic_Gate_2_Coherent_1.jpg", dpi = 500)
+plt.savefig("Logic_Gate_2_Coherent_1.jpg", dpi = 500)
     
 # %%
