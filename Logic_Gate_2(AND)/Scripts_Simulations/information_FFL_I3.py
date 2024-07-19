@@ -22,9 +22,6 @@ gammamz = 1/10        #Tasa de degradacion de ARNmZ
 muX     =1/20            #Tasa de degradacion de proteina X
 muY     =1/40            #Tasa de degradacion de proteina Y
 muZ     =1/30            #Tasa de degradacion de proteina Z
-
-My = 10
-Mz = 25
 #___________________________________________________________________________________________________
 
 diccionario_global_FFL_I3 = {}
@@ -41,20 +38,18 @@ for Hill in valores_posibles_Hill:
 
     for Kx in tqdm(valores_posibles_Kx):
         
-
         Mx = Kx/gammamx
         valor_X_estacionario = (Kpx/muX)*Mx
 
-        valor_Y_estacionario = (Kpy/muY)*My
-        valor_Z_estacionario = (Kpz/muZ)*Mz
-
-
         Kxy  = valor_X_estacionario/2        #Coeficiente de interaccion proteina X con ARNmY
-        Kxz  = valor_X_estacionario/10         #Coeficiente de interaccion proteina X con ARNmZ
-        Kyz  = valor_Y_estacionario/100         #Coeficiente de interaccion proteina Y con ARNmZ
+        Kxz  = valor_X_estacionario/5   
 
-        Ky = (My*gammamy)*(((valor_X_estacionario**Hill) + (Kxy**Hill))/(valor_X_estacionario**Hill))
-        Kz = (Mz*gammamz)*( (((valor_Y_estacionario**Hill) + (Kyz**Hill))*((valor_X_estacionario**Hill) + (Kxz **Hill))     )   /  ((valor_Y_estacionario**Hill)*(Kxz**Hill))   )
+        Ky = 5
+        Kz = 10
+
+        valor_Y_estacionario = Ky*(Kpy/(muY*gammamy))*((valor_X_estacionario**Hill)/(valor_X_estacionario**Hill + Kxy**Hill))
+
+        Kyz  = valor_Y_estacionario/100
 
         @njit
         def funcion_creacion_ARNmX():
@@ -206,19 +201,36 @@ for Hill in valores_posibles_Hill:
 
 #    diccionario_global_FFL_I3[f"Coeficiente_Hill_{Hill}"] = [distribucion_proteina_X, distribucion_proteina_Y, distribucion_proteina_Z]
 #    np.save('Simulacion_FFL_I3_AND_final.npy', diccionario_global_FFL_I3)
-celulas = np.mean(celulas, axis=0)
+#%%
+Distribucion_X = celulas[:,:,-3]
+DIstribucion_Z = celulas[:,:,-1]
+#%%
+Informacion = np.zeros((len(Distribucion_X), len(Distribucion_X)))
+for tiempo_i in np.arange(0,len(Distribucion_X)):
+    for tiempo_j in np.arange(0, len(Distribucion_X)):
+        data_I1 = {'X': Distribucion_X[:,tiempo_i],
+                'Y': DIstribucion_Z[:,tiempo_j]}
+        Cov_matrix_I1 = np.array(pd.DataFrame.cov(pd.DataFrame(data_I1)))
+        Informacion[tiempo_i][tiempo_j] = (1/2)*np.log2((Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1])/(Cov_matrix_I1[0][0]* Cov_matrix_I1[1][1] - (Cov_matrix_I1[0][1])**2))
+#%%
+print(np.nanmax(Informacion))
+
 # %%
+import matplotlib.pyplot as plt
+plt.imshow(Informacion)
+#%%
+celulas_promedio = np.mean(celulas, axis=0)
 import matplotlib.pyplot as plt
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))  # 1 fila, 3 columnas
 
-axs[0].plot(celulas[:,4])
+axs[0].plot(celulas_promedio[:,4])
 axs[0].set_title('Protein X')
-axs[1].plot(celulas[:,5])
+axs[1].plot(celulas_promedio[:,5])
 axs[1].set_title('Protein Y')
-axs[2].plot(celulas[:,6])
+axs[2].plot(celulas_promedio[:,6])
 axs[2].set_title('Protein Z')
 fig.suptitle('Logic Gate 2 I3', fontsize=16)
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig("Logic_Gate_2_Incoherent_3.jpg", dpi = 500)
+#plt.savefig("Logic_Gate_2_Incoherent_3.jpg", dpi = 500)
 # %%
